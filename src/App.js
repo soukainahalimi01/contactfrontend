@@ -3,30 +3,33 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Signup from './auth/Signup';
 import Login from './auth/Login';
-import Contact from './auth/Contact';
 import ProtectedRoute from './auth/ProtectedRoute';
+import DashboardLayout from './DashboardLayout';   // ✅ src/ direct
+import Contact from './auth/Contact';              // ✅ src/auth/
+import Users from './Users';                       // ✅ src/ direct
+import { Box } from '@mui/material';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Box sx={{
+      background: 'linear-gradient(58deg,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 53%,rgba(255,160,71,1) 100%)',
+      minHeight: "100vh"
+    }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/contacts" />} />
+          <Route path="/inscription" element={<Signup />} />
+          <Route path="/connexion" element={<Login />} />
 
-        <Route path="/" element={<Navigate to="/contact" />} />
-
-        <Route path="/inscription" element={<Signup />} />
-        <Route path="/connexion" element={<Login />} />
-
-        <Route
-          path="/contact"
-          element={
-            <ProtectedRoute>
-              <Contact />
-            </ProtectedRoute>
-          }
-        />
-
-      </Routes>
-    </BrowserRouter>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/contacts" element={<Contact />} />
+              <Route path="/users" element={<Users />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </Box>
   );
 }
 
