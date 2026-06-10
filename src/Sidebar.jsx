@@ -12,7 +12,7 @@ export default function Sidebar() {
     <div
       style={{
         width: "220px",
-        background: "#2f3542",
+        background: "rgb(105, 108, 114)",
         color: "white",
         padding: "20px",
         height: "100vh",
