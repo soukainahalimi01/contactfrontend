@@ -29,6 +29,11 @@ export default function Contacts() {
     ville: "", pays: "", adresse: "", email: "",
   });
 
+  const [showTels, setShowTels] = useState(false);
+  const [showEmails, setShowEmails] = useState(false);
+  const [extraTels, setExtraTels] = useState([]);
+  const [extraEmails, setExtraEmails] = useState([]);
+
   const token = localStorage.getItem("token");
 
   useEffect(() => { loadContacts(); }, []);
@@ -48,26 +53,91 @@ export default function Contacts() {
       const res = await fetch("http://localhost:8080/api/contacts", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Erreur chargement contacts:", res.status, errText);
+        return;
+      }
       const data = await res.json();
       setContacts(data);
       setFiltered(data);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Erreur réseau loadContacts:", e); }
   };
 
   const handleChange = (e) => setContact({ ...contact, [e.target.name]: e.target.value });
+
+  const addExtraTel = () => setExtraTels([...extraTels, ""]);
+  const removeExtraTel = (i) => setExtraTels(extraTels.filter((_, idx) => idx !== i));
+  const changeExtraTel = (i, val) => {
+    const arr = [...extraTels]; arr[i] = val; setExtraTels(arr);
+  };
+
+  const addExtraEmail = () => setExtraEmails([...extraEmails, ""]);
+  const removeExtraEmail = (i) => setExtraEmails(extraEmails.filter((_, idx) => idx !== i));
+  const changeExtraEmail = (i, val) => {
+    const arr = [...extraEmails]; arr[i] = val; setExtraEmails(arr);
+  };
+
+  const resetExtras = () => {
+    setExtraTels([]);
+    setExtraEmails([]);
+    setShowTels(false);
+    setShowEmails(false);
+  };
 
   const addContact = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/contacts", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(contact),
       });
-      if (!res.ok) throw new Error();
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Erreur serveur addContact:", res.status, errText);
+        alert(`Erreur ${res.status} : ${errText}`);
+        return;
+      }
+
+      const created = await res.json();
+
+      for (const tel of extraTels.filter(v => v.trim())) {
+        const r = await fetch(`http://localhost:8080/api/coordonnees/${created.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ type: "TEL", valeur: tel, label: "Téléphone" }),
+        });
+        if (!r.ok) {
+          const t = await r.text();
+          console.error("Erreur ajout téléphone:", r.status, t);
+        }
+      }
+
+      for (const em of extraEmails.filter(v => v.trim())) {
+        const r = await fetch(`http://localhost:8080/api/coordonnees/${created.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ type: "EMAIL", valeur: em, label: "Email" }),
+        });
+        if (!r.ok) {
+          const t = await r.text();
+          console.error("Erreur ajout email:", r.status, t);
+        }
+      }
+
       setOpen(false);
       setContact({ firstName: "", lastName: "", tel: "", cin: "", ville: "", pays: "", adresse: "", email: "" });
+      resetExtras();
       loadContacts();
-    } catch (e) { console.error(e); }
+
+    } catch (e) {
+      console.error("Erreur réseau addContact:", e);
+      alert("Erreur réseau : " + e.message);
+    }
   };
 
   const deleteContact = async (id) => {
@@ -86,14 +156,20 @@ export default function Contacts() {
 
   const saveEdit = async () => {
     try {
-      await fetch(`http://localhost:8080/api/contacts/${editContact.id}`, {
+      const res = await fetch(`http://localhost:8080/api/contacts/${editContact.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(editContact),
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Erreur saveEdit:", res.status, errText);
+        alert(`Erreur ${res.status} : ${errText}`);
+        return;
+      }
       setEditOpen(false);
       loadContacts();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Erreur réseau saveEdit:", e); }
   };
 
   const openCoordDialog = async (row, tabIndex) => {
@@ -152,53 +228,16 @@ export default function Contacts() {
     </span>
   );
 
-  const PlusBtn = ({ row, tabIndex }) => (
-    <Tooltip title={tabIndex === 0 ? "Gérer emails" : "Gérer téléphones"}>
-      <button onClick={() => openCoordDialog(row, tabIndex)} style={{
-        padding: "1px 6px", fontSize: "15px", cursor: "pointer",
-        background: ORANGE_LIGHT, border: `1px solid ${ORANGE}`,
-        borderRadius: "50%", color: ORANGE_DARK, fontWeight: 700,
-        lineHeight: 1.3, minWidth: "22px", flexShrink: 0,
-      }}>+</button>
-    </Tooltip>
-  );
-
   const columns = [
     { field: "id",        headerName: "ID",      width: 55  },
     { field: "lastName",  headerName: "Nom",      width: 110, renderCell: ellipsisCell },
     { field: "firstName", headerName: "Prénom",   width: 110, renderCell: ellipsisCell },
-    {
-      field: "tel", headerName: "Téléphone", width: 175,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, height: "100%", overflow: "hidden", width: "100%" }}>
-          <span title={params.row.tel} style={{
-            fontSize: "13px", flex: 1, overflow: "hidden",
-            textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
-            {params.row.tel}
-          </span>
-          <PlusBtn row={params.row} tabIndex={1} />
-        </Box>
-      ),
-    },
-    { field: "cin",     headerName: "CIN",     width: 100, renderCell: ellipsisCell },
-    { field: "ville",   headerName: "Ville",   width: 100, renderCell: ellipsisCell },
-    { field: "pays",    headerName: "Pays",    width: 100, renderCell: ellipsisCell },
-    { field: "adresse", headerName: "Adresse", width: 130, renderCell: ellipsisCell },
-    {
-      field: "email", headerName: "Email", width: 210,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, height: "100%", overflow: "hidden", width: "100%" }}>
-          <span title={params.row.email} style={{
-            fontSize: "13px", flex: 1, overflow: "hidden",
-            textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
-            {params.row.email}
-          </span>
-          <PlusBtn row={params.row} tabIndex={0} />
-        </Box>
-      ),
-    },
+    { field: "tel",       headerName: "Téléphone", width: 175, renderCell: ellipsisCell },
+    { field: "cin",       headerName: "CIN",      width: 100, renderCell: ellipsisCell },
+    { field: "ville",     headerName: "Ville",    width: 100, renderCell: ellipsisCell },
+    { field: "pays",      headerName: "Pays",     width: 100, renderCell: ellipsisCell },
+    { field: "adresse",   headerName: "Adresse",  width: 130, renderCell: ellipsisCell },
+    { field: "email",     headerName: "Email",    width: 210, renderCell: ellipsisCell },
     {
       field: "actions", headerName: "Actions", width: 155,
       renderCell: (params) => (
@@ -301,19 +340,95 @@ export default function Contacts() {
       </Box>
 
       {/* ADD DIALOG */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={() => { setOpen(false); resetExtras(); }} maxWidth="sm" fullWidth>
         <DialogTitle sx={{
           background: `linear-gradient(135deg, ${ORANGE_LIGHT}, ${ORANGE})`,
           color: ORANGE_DARK, fontWeight: 500, fontSize: "16px",
         }}>➕ Ajouter Contact</DialogTitle>
         <DialogContent>
-          {fields.map(f => (
-            <TextField key={f.name} margin="dense" label={f.label} name={f.name}
-              fullWidth onChange={handleChange} value={contact[f.name]} sx={dialogFieldStyle} />
-          ))}
+          {fields.map(f => {
+            if (f.name === "tel") {
+              return (
+                <Box key="tel-block">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <TextField margin="dense" label="Téléphone" name="tel" fullWidth
+                      onChange={handleChange} value={contact.tel} sx={dialogFieldStyle} />
+                    <Tooltip title="Ajouter d'autres téléphones">
+                      <button type="button" onClick={() => setShowTels(!showTels)} style={{
+                        border: "none", background: "transparent", cursor: "pointer",
+                        fontSize: "18px", marginTop: "8px",
+                      }}>👁️</button>
+                    </Tooltip>
+                  </Box>
+                  {showTels && (
+                    <Box sx={{ ml: 2, mb: 1 }}>
+                      {extraTels.map((val, i) => (
+                        <Box key={i} sx={{ display: "flex", gap: 1, mb: 1 }}>
+                          <TextField size="small" fullWidth placeholder="Autre téléphone"
+                            value={val} onChange={e => changeExtraTel(i, e.target.value)}
+                            sx={dialogFieldStyle} />
+                          <button type="button" onClick={() => removeExtraTel(i)} style={{
+                            border: "none", background: "transparent", cursor: "pointer",
+                            color: "#a32d2d", fontSize: "16px",
+                          }}>🗑️</button>
+                        </Box>
+                      ))}
+                      <button type="button" onClick={addExtraTel} style={{
+                        padding: "6px 14px", background: ORANGE, border: "none",
+                        borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
+                        cursor: "pointer", fontSize: "12px",
+                      }}>+ Ajouter téléphone</button>
+                    </Box>
+                  )}
+                </Box>
+              );
+            }
+
+            if (f.name === "email") {
+              return (
+                <Box key="email-block">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <TextField margin="dense" label="Email" name="email" fullWidth
+                      onChange={handleChange} value={contact.email} sx={dialogFieldStyle} />
+                    <Tooltip title="Ajouter d'autres emails">
+                      <button type="button" onClick={() => setShowEmails(!showEmails)} style={{
+                        border: "none", background: "transparent", cursor: "pointer",
+                        fontSize: "18px", marginTop: "8px",
+                      }}>👁️</button>
+                    </Tooltip>
+                  </Box>
+                  {showEmails && (
+                    <Box sx={{ ml: 2, mb: 1 }}>
+                      {extraEmails.map((val, i) => (
+                        <Box key={i} sx={{ display: "flex", gap: 1, mb: 1 }}>
+                          <TextField size="small" fullWidth placeholder="Autre email"
+                            value={val} onChange={e => changeExtraEmail(i, e.target.value)}
+                            sx={dialogFieldStyle} />
+                          <button type="button" onClick={() => removeExtraEmail(i)} style={{
+                            border: "none", background: "transparent", cursor: "pointer",
+                            color: "#a32d2d", fontSize: "16px",
+                          }}>🗑️</button>
+                        </Box>
+                      ))}
+                      <button type="button" onClick={addExtraEmail} style={{
+                        padding: "6px 14px", background: ORANGE, border: "none",
+                        borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
+                        cursor: "pointer", fontSize: "12px",
+                      }}>+ Ajouter un email</button>
+                    </Box>
+                  )}
+                </Box>
+              );
+            }
+
+            return (
+              <TextField key={f.name} margin="dense" label={f.label} name={f.name}
+                fullWidth onChange={handleChange} value={contact[f.name]} sx={dialogFieldStyle} />
+            );
+          })}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} sx={{ color: "#888" }}>Annuler</Button>
+          <Button onClick={() => { setOpen(false); resetExtras(); }} sx={{ color: "#888" }}>Annuler</Button>
           <Button variant="contained" onClick={addContact}
             sx={{ background: ORANGE, color: ORANGE_DARK, fontWeight: 500, "&:hover": { background: "#e09040" } }}>
             Ajouter
@@ -367,7 +482,6 @@ export default function Contacts() {
           </Box>
 
           <DialogContent>
-            {/* Liste */}
             <Box sx={{ mb: 2 }}>
               {currentList.length === 0 && (
                 <p style={{ color: "#888", fontSize: "13px", margin: "8px 0" }}>
@@ -404,7 +518,6 @@ export default function Contacts() {
               ))}
             </Box>
 
-            {/* Ajouter */}
             <Box sx={{ borderTop: "1px solid #eee", pt: 2, display: "flex", flexDirection: "column", gap: 1 }}>
               <p style={{ margin: 0, fontSize: "13px", fontWeight: 500, color: ORANGE_DARK }}>
                 Ajouter {activeTab === 0 ? "un email" : "un téléphone"} :
