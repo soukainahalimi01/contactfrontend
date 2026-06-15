@@ -29,7 +29,6 @@ export default function Contacts() {
     ville: "", pays: "", adresse: "", email: "",
   });
 
-  // ADD dialog extras
   const [showTels, setShowTels] = useState(false);
   const [showEmails, setShowEmails] = useState(false);
   const [extraTels, setExtraTels] = useState([]);
@@ -66,7 +65,6 @@ export default function Contacts() {
 
   const handleChange = (e) => setContact({ ...contact, [e.target.name]: e.target.value });
 
-  // ADD extras handlers
   const addExtraTel = () => setExtraTels([...extraTels, ""]);
   const removeExtraTel = (i) => setExtraTels(extraTels.filter((_, idx) => idx !== i));
   const changeExtraTel = (i, val) => {
@@ -152,20 +150,12 @@ export default function Contacts() {
     } catch (e) { console.error("Erreur réseau saveEdit:", e); }
   };
 
-  // فتح coordDialog من داخل Edit — كيسكر Edit وكيفتح coordDialog
   const openCoordFromEdit = (tabIndex) => {
     setEditOpen(false);
     setSelectedContact(editContact);
     setActiveTab(tabIndex);
     setCoordDialog(true);
     loadCoordonnees(editContact.id);
-  };
-
-  const openCoordDialog = async (row, tabIndex) => {
-    setSelectedContact(row);
-    setActiveTab(tabIndex);
-    setCoordDialog(true);
-    await loadCoordonnees(row.id);
   };
 
   const loadCoordonnees = async (contactId) => {
@@ -264,6 +254,7 @@ export default function Contacts() {
   const eyeBtnStyle = {
     border: "none", background: "transparent",
     cursor: "pointer", fontSize: "18px", marginTop: "8px",
+    fontWeight: "700", color: ORANGE,
   };
   const extraRowStyle = {
     background: "transparent", border: "1px solid #e24b4a",
@@ -294,7 +285,7 @@ export default function Contacts() {
           borderRadius: "6px", color: ORANGE_DARK, letterSpacing: "0.04em",
           display: "flex", alignItems: "center", gap: "6px",
         }}>
-          ➕ AJOUTER CONTACT
+         + AJOUTER CONTACT
         </button>
       </Box>
 
@@ -340,7 +331,7 @@ export default function Contacts() {
         />
       </Box>
 
-      {/* ═══════════ ADD DIALOG ═══════════ */}
+      {/* ADD DIALOG */}
       <Dialog open={open} onClose={() => { setOpen(false); resetExtras(); }} maxWidth="sm" fullWidth>
         <DialogTitle sx={{
           background: `linear-gradient(135deg, ${ORANGE_LIGHT}, ${ORANGE})`,
@@ -354,7 +345,7 @@ export default function Contacts() {
                   <TextField margin="dense" label="Téléphone" name="tel" fullWidth
                     onChange={handleChange} value={contact.tel} sx={dialogFieldStyle} />
                   <Tooltip title="Ajouter d'autres téléphones">
-                    <button type="button" onClick={() => setShowTels(!showTels)} style={eyeBtnStyle}>👁️</button>
+                    <button type="button" onClick={() => setShowTels(!showTels)} style={eyeBtnStyle}>+</button>
                   </Tooltip>
                 </Box>
                 {showTels && (
@@ -377,7 +368,7 @@ export default function Contacts() {
                   <TextField margin="dense" label="Email" name="email" fullWidth
                     onChange={handleChange} value={contact.email} sx={dialogFieldStyle} />
                   <Tooltip title="Ajouter d'autres emails">
-                    <button type="button" onClick={() => setShowEmails(!showEmails)} style={eyeBtnStyle}>👁️</button>
+                    <button type="button" onClick={() => setShowEmails(!showEmails)} style={eyeBtnStyle}>+</button>
                   </Tooltip>
                 </Box>
                 {showEmails && (
@@ -409,7 +400,7 @@ export default function Contacts() {
         </DialogActions>
       </Dialog>
 
-      {/* ═══════════ EDIT DIALOG ═══════════ */}
+      {/* EDIT DIALOG */}
       {editContact && (
         <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
           <DialogTitle sx={{
@@ -424,7 +415,7 @@ export default function Contacts() {
                     <TextField margin="dense" label="Téléphone" name="tel" fullWidth
                       onChange={handleEditChange} value={editContact.tel} sx={dialogFieldStyle} />
                     <Tooltip title="Gérer les téléphones">
-                      <button type="button" onClick={() => openCoordFromEdit(1)} style={eyeBtnStyle}>👁️</button>
+                      <button type="button" onClick={() => openCoordFromEdit(1)} style={eyeBtnStyle}>+</button>
                     </Tooltip>
                   </Box>
                 </Box>
@@ -435,7 +426,7 @@ export default function Contacts() {
                     <TextField margin="dense" label="Email" name="email" fullWidth
                       onChange={handleEditChange} value={editContact.email} sx={dialogFieldStyle} />
                     <Tooltip title="Gérer les emails">
-                      <button type="button" onClick={() => openCoordFromEdit(0)} style={eyeBtnStyle}>👁️</button>
+                      <button type="button" onClick={() => openCoordFromEdit(0)} style={eyeBtnStyle}>+</button>
                     </Tooltip>
                   </Box>
                 </Box>
@@ -456,7 +447,7 @@ export default function Contacts() {
         </Dialog>
       )}
 
-      {/* ═══════════ COORDONNEES DIALOG ═══════════ */}
+      {/* COORDONNEES DIALOG */}
       {selectedContact && (
         <Dialog open={coordDialog} onClose={() => setCoordDialog(false)} maxWidth="sm" fullWidth>
           <DialogTitle sx={{

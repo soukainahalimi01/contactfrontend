@@ -41,7 +41,6 @@ function Login() {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("refreshToken", res.data.refreshToken);
-      console.log("Connexion réussie");
       navigate("/");
     } catch (err) {
       if (err.response) {
@@ -54,16 +53,24 @@ function Login() {
     }
   };
 
+  const orangeColor = "#f0831e";
+
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', my: 8, p: 4, border: '1px solid', borderColor: '#efaa73ff', borderRadius: 2 ,background:"white"}}>
+    <Box sx={{
+      maxWidth: 400, mx: 'auto', my: 8, p: 4,
+      border: '1px solid', borderColor: orangeColor,
+      borderRadius: 2, background: "white"
+    }}>
       <Typography variant="h5" fontWeight={500} gutterBottom>Connexion</Typography>
       <Typography variant="body2" color="text.secondary" mb={3}>
-      Saisissez vos identifiants pour continuer
+        Saisissez vos identifiants pour continuer
       </Typography>
 
       {errors.api && <Alert severity="error" sx={{ mb: 2 }}>{errors.api}</Alert>}
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
+
+        {/* Email — gris par défaut MUI */}
         <TextField
           label="Email"
           name="email"
@@ -75,6 +82,8 @@ function Login() {
           error={!!errors.email}
           helperText={errors.email}
         />
+
+        {/* Password — orange */}
         <TextField
           label="Password"
           name="password"
@@ -85,6 +94,15 @@ function Login() {
           onChange={handleChange}
           error={!!errors.password}
           helperText={errors.password}
+          sx={{
+            '& label': { color: orangeColor },
+            '& label.Mui-focused': { color: orangeColor },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: orangeColor },
+              '&:hover fieldset': { borderColor: orangeColor },
+              '&.Mui-focused fieldset': { borderColor: orangeColor },
+            },
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -97,10 +115,22 @@ function Login() {
         />
 
         <Box textAlign="right" mt={1}>
-          <Link href="#" variant="body2" sx={{color : "#f0831e"}}>Mot de passe oublié</Link>
+          <Link href="#" variant="body2" sx={{ color: orangeColor }}>
+            Mot de passe oublié
+          </Link>
         </Box>
 
-        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3,background :"#f0831e" }} disabled={loading}>
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          sx={{
+            mt: 3,
+            background: orangeColor,
+            '&:hover': { background: "#d4701a" },
+          }}
+          disabled={loading}
+        >
           {loading ? "Connexion..." : "SE CONNECTER"}
         </Button>
       </Box>
@@ -108,8 +138,8 @@ function Login() {
       <Divider sx={{ my: 3 }} />
 
       <Typography variant="body2" textAlign="center">
-      Vous n'avez pas de compte ?{' '}
-        <Link href="/inscription" sx={{color :"#f0831e"}}>S'inscrire</Link>
+        Vous n'avez pas de compte ?{' '}
+        <Link href="/inscription" sx={{ color: orangeColor }}>S'inscrire</Link>
       </Typography>
     </Box>
   );

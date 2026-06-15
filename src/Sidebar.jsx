@@ -11,38 +11,38 @@ export default function Sidebar() {
   return (
     <div style={{
       width: "220px",
-      background: "#696c72",
-      color: "#1a1a1a",
+      background: "rgb(222 157 96)",
+      color: "white",
       padding: "24px 16px",
-      minHeight: "100vh",    
-      height: "100%",        
+      minHeight: "100vh",
+      height: "100%",
       display: "flex",
       flexDirection: "column",
       gap: "4px",
       boxSizing: "border-box",
     }}>
       <h3 style={{
-        color: "#1a1a1a",
-        fontSize: "15px",
-        fontWeight: "600",
-        marginBottom: "24px",
-        paddingLeft: "8px",
+        color: "white",
+        fontSize: "28px",
+        fontWeight: "700",
+        marginBottom: "65px",
+        paddingLeft: "15px",
       }}>
-        📊 Dashboard
+      Dashboard
       </h3>
 
       <Link to="/contacts" style={{
         display: "flex",
         alignItems: "center",
-        gap: "8px",
-        color: "#1a1a1a",
+        gap: "10px",
+        color: "gray",
         textDecoration: "none",
-        fontSize: "13px",
+        fontSize: "18px",
         padding: "6px 8px",
-        borderRadius: "6px",
+        borderRadius: "7px",
         transition: "background 0.2s",
       }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.1)"}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
       >
         📇 Contacts
@@ -51,15 +51,15 @@ export default function Sidebar() {
       <Link to="/users" style={{
         display: "flex",
         alignItems: "center",
-        gap: "8px",
-        color: "#1a1a1a",
+        gap: "10px",
+        color: "gray",
         textDecoration: "none",
-        fontSize: "13px",
+        fontSize: "20px",
         padding: "6px 8px",
-        borderRadius: "6px",
+        borderRadius: "8px",
         transition: "background 0.2s",
       }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.1)"}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
       >
         👤 Users
@@ -68,9 +68,9 @@ export default function Sidebar() {
       <button onClick={logout} style={{
         marginTop: "auto",
         padding: "10px 12px",
-        background: "#e53935",
-        color: "white",
-        border: "none",
+        background: "rgba(0,0,0,0.2)",
+        color: "gray",
+        border: "1.5px solid rgba(255,255,255,0.4)",
         borderRadius: "6px",
         cursor: "pointer",
         fontSize: "13px",
@@ -81,8 +81,8 @@ export default function Sidebar() {
         gap: "8px",
         transition: "background 0.2s",
       }}
-        onMouseEnter={e => e.currentTarget.style.background = "#c62828"}
-        onMouseLeave={e => e.currentTarget.style.background = "#e53935"}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.35)"}
+        onMouseLeave={e => e.currentTarget.style.background = "rgba(0,0,0,0.2)"}
       >
         🚪 Déconnexion
       </button>
