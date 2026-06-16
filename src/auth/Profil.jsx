@@ -65,7 +65,6 @@ export default function Profil() {
 
   // ===== VALIDATIONS =====
   const emailValide = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  const telValide   = (v) => /^\d{10}$/.test(v.replace(/\s/g, ""));
 
   // ===== FORCE MOT DE PASSE =====
   const calcStrength = (val) => {
@@ -84,10 +83,6 @@ export default function Profil() {
   const handleSaveInfo = () => {
     if (!emailValide(email)) {
       setInfoMsg({ type: "error", text: "Email invalide." });
-      return;
-    }
-    if (!telValide(tel)) {
-      setInfoMsg({ type: "error", text: "Téléphone invalide (10 chiffres)." });
       return;
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ nom, prenom, email, tel }));
@@ -123,7 +118,6 @@ export default function Profil() {
 
     try {
       const token = localStorage.getItem("token");
-
       const response = await fetch("http://localhost:8080/api/auth/change-password", {
         method: "PUT",
         headers: {
@@ -160,22 +154,43 @@ export default function Profil() {
   return (
     <Box sx={{ p: 4, maxWidth: 900 }}>
 
-      {/* Avatar */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
-        <Avatar sx={{ width: 56, height: 56, bgcolor: ORANGE, fontSize: 20, fontWeight: 700 }}>
+      {/* ===== AVATAR ===== */}
+      <Box sx={{
+        display: "flex", alignItems: "center", gap: 2,
+        mb: 4, pb: 3,
+        borderBottom: `1px solid ${ORANGE_LIGHT}`,
+      }}>
+        <Avatar sx={{
+          width: 64, height: 64,
+          bgcolor: ORANGE,
+          fontSize: 22, fontWeight: 700,
+          boxShadow: "0 2px 8px rgba(201,124,58,0.3)",
+        }}>
           {initiales.toUpperCase()}
         </Avatar>
         <Box>
-          <Typography sx={{ fontWeight: 600, fontSize: 17 }}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18, color: "#1a1a1a" }}>
             {nom} {prenom}
           </Typography>
-          <Typography sx={{ fontSize: 13, color: "#888" }}>Admin</Typography>
+          <Typography sx={{
+            fontSize: 12, color: "#fff",
+            bgcolor: ORANGE, display: "inline-block",
+            px: 1.5, py: 0.3, borderRadius: "20px", mt: 0.5,
+          }}>
+            Admin
+          </Typography>
         </Box>
       </Box>
 
       {/* ===== CARD : Infos personnelles ===== */}
-      <Box sx={{ bgcolor: "#fff", borderRadius: 2, p: 3, mb: 3, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-        <Typography sx={{ fontWeight: 600, color: ORANGE_DARK, mb: 2, pb: 1, borderBottom: `1px solid ${ORANGE_LIGHT}` }}>
+      <Box sx={{
+        bgcolor: "#fff", borderRadius: 2, p: 3, mb: 3,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}>
+        <Typography sx={{
+          fontWeight: 600, color: ORANGE_DARK,
+          mb: 2, pb: 1, borderBottom: `1px solid ${ORANGE_LIGHT}`,
+        }}>
           Informations personnelles
         </Typography>
 
@@ -195,9 +210,8 @@ export default function Profil() {
             onChange={(e) => setEmail(e.target.value)}
             error={email !== "" && !emailValide(email)}
             helperText={email !== "" && !emailValide(email) ? "Email invalide." : ""}
-            sx={inputStyle}
+            sx={{ ...inputStyle, gridColumn: "1 / -1" }}
           />
-        
         </Box>
 
         {infoMsg && (
@@ -211,8 +225,14 @@ export default function Profil() {
       </Box>
 
       {/* ===== CARD : Mot de passe ===== */}
-      <Box sx={{ bgcolor: "#fff", borderRadius: 2, p: 3, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-        <Typography sx={{ fontWeight: 600, color: ORANGE_DARK, mb: 2, pb: 1, borderBottom: `1px solid ${ORANGE_LIGHT}` }}>
+      <Box sx={{
+        bgcolor: "#fff", borderRadius: 2, p: 3,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}>
+        <Typography sx={{
+          fontWeight: 600, color: ORANGE_DARK,
+          mb: 2, pb: 1, borderBottom: `1px solid ${ORANGE_LIGHT}`,
+        }}>
           Changer mot de passe
         </Typography>
 
@@ -272,20 +292,20 @@ export default function Profil() {
 // ===== STYLES =====
 const inputStyle = {
   "& .MuiOutlinedInput-root": {
-    "&:hover fieldset":       { borderColor: ORANGE },
-    "&.Mui-focused fieldset": { borderColor: ORANGE },
+    "&:hover fieldset":       { borderColor: "#c97c3a" },
+    "&.Mui-focused fieldset": { borderColor: "#c97c3a" },
   },
-  "& label.Mui-focused": { color: ORANGE },
+  "& label.Mui-focused": { color: "#c97c3a" },
 };
 
 const btnPrimary = {
-  bgcolor: ORANGE, color: "#fff",
+  bgcolor: "#c97c3a", color: "#fff",
   "&:hover": { bgcolor: "#a8612a" },
   textTransform: "none", fontWeight: 500,
 };
 
 const btnSecondary = {
   borderColor: "#ddd", color: "#555",
-  "&:hover": { borderColor: ORANGE, color: ORANGE },
+  "&:hover": { borderColor: "#c97c3a", color: "#c97c3a" },
   textTransform: "none",
 };

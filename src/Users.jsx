@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import PeopleIcon from "@mui/icons-material/People";
+
+const ORANGE = "#f0a857";
+const ORANGE_DARK = "#3a2200";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
   const token = localStorage.getItem("token");
 
   const getCurrentUserFromToken = () => {
-    try {
-      return JSON.parse(atob(token.split(".")[1]));
-    } catch {
-      return null;
-    }
+    try { return JSON.parse(atob(token.split(".")[1])); }
+    catch { return null; }
   };
 
   const currentUser = getCurrentUserFromToken();
@@ -18,24 +19,17 @@ export default function Users() {
   const currentEmail = currentUser?.sub;
 
   const loadUsers = () => {
-    axios
-      .get("http://localhost:8080/api/users", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const allUsers = res.data;
-        if (!isAdmin) {
-          setUsers(allUsers.filter((u) => u.email === currentEmail));
-        } else {
-          setUsers(allUsers);
-        }
-      })
-      .catch((err) => console.error("Erreur users:", err));
+    axios.get("http://localhost:8080/api/users", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => {
+      const allUsers = res.data;
+      setUsers(isAdmin ? allUsers : allUsers.filter((u) => u.email === currentEmail));
+    })
+    .catch((err) => console.error("Erreur users:", err));
   };
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  useEffect(() => { loadUsers(); }, []);
 
   const toggleRole = async (user) => {
     const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
@@ -47,63 +41,105 @@ export default function Users() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       loadUsers();
-    } catch (err) {
-      console.error("Erreur changement rôle:", err);
-    }
+    } catch (err) { console.error("Erreur changement rôle:", err); }
   };
 
   return (
     <div style={{ padding: "25px" }}>
-      <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontSize: "32px", fontWeight: "bold", margin: 0 }}>👤 Users</h2>
+      {/* Header */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: "10px",
+        marginBottom: "24px",
+        background: `linear-gradient(135deg, #f5d5a8, ${ORANGE})`,
+        padding: "14px 20px", borderRadius: "8px",
+      }}>
+        <PeopleIcon style={{ color: ORANGE_DARK, fontSize: "24px" }} />
+        <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 500, color: ORANGE_DARK }}>
+          Users
+        </h2>
       </div>
-      <table style={{ width: "100%", borderCollapse: "collapse", background: "white", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
-        <thead>
-          <tr style={{ background: "#b3b3b3", color: "#000" }}>
-            <th style={th}>ID</th>
-            <th style={th}>Nom</th>
-            <th style={th}>Prénom</th>
-            <th style={th}>Email</th>
-            <th style={th}>Rôle</th>
-            <th style={th}>Département</th>
-            {isAdmin && <th style={th}>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {users.length === 0 ? (
-            <tr>
-              <td colSpan={isAdmin ? 7 : 6} style={{ textAlign: "center", padding: "20px", color: "#888" }}>
-                Aucun utilisateur trouvé
-              </td>
+
+      {/* Table */}
+      <div style={{
+        background: "white", borderRadius: "10px",
+        border: "1px solid #e0e0e0",
+        overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ background: "white", borderBottom: "2px solid #e0e0e0" }}>
+              <th style={th}>ID</th>
+              <th style={th}>Nom</th>
+              <th style={th}>Prénom</th>
+              <th style={th}>Email</th>
+              <th style={th}>Rôle</th>
+              <th style={th}>Département</th>
+              {isAdmin && <th style={th}>Actions</th>}
             </tr>
-          ) : (
-            users.map((u, index) => (
-              <tr key={u.id} style={{ borderBottom: "1px solid #ddd", background: index % 2 === 0 ? "#f8f8f8" : "#ffffff" }}>
-                <td style={td}>{u.id}</td>
-                <td style={td}>{u.lastName}</td>
-                <td style={td}>{u.firstName}</td>
-                <td style={td}>{u.email}</td>
-                <td style={td}>
-                  <span style={{ background: u.role === "ADMIN" ? "#e74c3c" : "#95a5a6", color: "white", padding: "5px 12px", borderRadius: "15px", fontSize: "12px", fontWeight: "bold" }}>
-                    {u.role}
-                  </span>
+          </thead>
+          <tbody>
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan={isAdmin ? 7 : 6} style={{ textAlign: "center", padding: "30px", color: "#aaa", fontSize: "14px" }}>
+                  Aucun utilisateur trouvé
                 </td>
-                <td style={td}>{u.departement}</td>
-                {isAdmin && (
-                  <td style={td}>
-                    <button onClick={() => toggleRole(u)} style={{ padding: "8px 14px", background: u.role === "ADMIN" ? "#95a5a6" : "#e74c3c", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" }}>
-                      {u.role === "ADMIN" ? "👤 → USER" : "⭐ → ADMIN"}
-                    </button>
-                  </td>
-                )}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              users.map((u, index) => (
+                <tr key={u.id} style={{
+                  borderBottom: "1px solid #f0f0f0",
+                  background: "#ffffff",
+                  transition: "background 0.15s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#fdf3e7"}
+                  onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}
+                >
+                  <td style={td}>{u.id}</td>
+                  <td style={td}>{u.lastName}</td>
+                  <td style={td}>{u.firstName}</td>
+                  <td style={td}>{u.email}</td>
+                  <td style={td}>
+                    <span style={{
+                      background: u.role === "ADMIN" ? "#fff0e0" : "#f0f0f0",
+                      color: u.role === "ADMIN" ? "#b06000" : "#555",
+                      padding: "4px 12px", borderRadius: "20px",
+                      fontSize: "12px", fontWeight: "600",
+                      border: u.role === "ADMIN" ? "1px solid #f0a857" : "1px solid #ccc",
+                    }}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td style={td}>{u.departement}</td>
+                  {isAdmin && (
+                    <td style={td}>
+                      <button onClick={() => toggleRole(u)} style={{
+                        padding: "6px 14px",
+                        background: "transparent",
+                        color: u.role === "ADMIN" ? "#888" : ORANGE,
+                        border: `1px solid ${u.role === "ADMIN" ? "#ccc" : ORANGE}`,
+                        borderRadius: "6px", cursor: "pointer",
+                        fontSize: "12px", fontWeight: "600",
+                        transition: "all 0.2s",
+                      }}>
+                        {u.role === "ADMIN" ? "→ USER" : "→ ADMIN"}
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-const th = { padding: "14px 16px", textAlign: "left", fontWeight: "bold", color: "#000", borderRight: "1px solid #d0d0d0" };
-const td = { padding: "14px 16px" };
+const th = {
+  padding: "14px 16px", textAlign: "left",
+  fontWeight: "700", color: "#1a1a1a", fontSize: "13px",
+  borderRight: "1px solid #f0f0f0",
+};
+const td = {
+  padding: "13px 16px", fontSize: "13px", color: "#1a1a1a",
+};

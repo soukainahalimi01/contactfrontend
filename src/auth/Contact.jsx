@@ -270,22 +270,34 @@ export default function Contacts() {
   return (
     <div>
       {/* HEADER */}
-      <Box sx={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        mb: 2, px: 2, py: 1.5,
-        background: `linear-gradient(135deg, ${ORANGE_LIGHT}, ${ORANGE})`,
-        borderRadius: "8px",
-      }}>
-        <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 500, color: ORANGE_DARK }}>
+      <Box   sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+          p: 2,
+          borderRadius: "16px",
+          background: "linear-gradient(135deg,#f5d5a8,#f0a857)",
+          boxShadow: "0 4px 12px rgba(250, 246, 246, 0.08)",
+        }}
+      >
+        <h2 style={{ margin: 0, color: ORANGE_DARK }}>
           📇 Contacts
         </h2>
-        <button onClick={() => setOpen(true)} style={{
-          padding: "7px 16px", fontSize: "12px", fontWeight: 500, cursor: "pointer",
-          background: "transparent", border: `1.5px solid ${ORANGE_DARK}`,
-          borderRadius: "6px", color: ORANGE_DARK, letterSpacing: "0.04em",
-          display: "flex", alignItems: "center", gap: "6px",
-        }}>
-         + AJOUTER CONTACT
+      
+        <button
+          onClick={() => setOpen(true)}
+          style={{
+            padding: "8px 16px",
+            borderRadius: "10px",
+            border: "1px solid #fff",
+            background: "transparent",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          + AJOUTER CONTACT
         </button>
       </Box>
 
@@ -306,30 +318,77 @@ export default function Contacts() {
         />
       </Box>
 
-      {/* TABLE */}
-      <Box sx={{
-        height: 500, width: "100%",
-        border: "1px solid #d0d0d0", borderRadius: "8px", overflow: "hidden",
-        "& .MuiDataGrid-columnHeaders": { backgroundColor: `${HEADER_BG} !important` },
-        "& .MuiDataGrid-columnHeader": { backgroundColor: `${HEADER_BG} !important`, color: "#1a1a1a !important", fontSize: "12px !important" },
-        "& .MuiDataGrid-columnHeaderTitle": { fontWeight: "500 !important", color: "#1a1a1a !important" },
-        "& .MuiDataGrid-row:hover": { backgroundColor: "#fdf3e7 !important" },
-        "& .MuiDataGrid-cell": {
-          fontSize: "13px", overflow: "hidden !important",
-          display: "flex !important", alignItems: "center !important",
-        },
-        "& .MuiDataGrid-filler": { backgroundColor: `${HEADER_BG} !important` },
-        "& .MuiDataGrid-scrollbarFiller": { backgroundColor: `${HEADER_BG} !important` },
-      }}>
-        <DataGrid
-          rows={filtered}
-          columns={columns}
-          getRowId={(row) => row.id}
-          slots={{ toolbar: GridToolbar }}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-          pageSizeOptions={[10, 25, 50]}
-        />
-      </Box>
+ {/* TABLE */}
+<Box
+  sx={{
+    height: 500,
+    width: "100%",
+    borderRadius: "16px",
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+
+    "& .MuiDataGrid-root": {
+      border: "none",
+    },
+
+    "& .MuiDataGrid-columnHeaders": {
+      backgroundColor: "#f8f8f8 !important",
+      borderBottom: "1px solid #ddd",
+    },
+
+    "& .MuiDataGrid-columnHeader": {
+      backgroundColor: "#f8f8f8 !important",
+      color: "#1a1a1a !important",
+      fontSize: "14px !important",
+      fontWeight: "600 !important",
+    },
+
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "600 !important",
+      color: "#1a1a1a !important",
+    },
+
+    "& .MuiDataGrid-cell": {
+      fontSize: "14px",
+      borderBottom: "1px solid #eee",
+      display: "flex",
+      alignItems: "center",
+    },
+
+    "& .MuiDataGrid-columnSeparator": {
+      color: "#ddd",
+    },
+
+    "& .MuiDataGrid-row:hover": {
+      backgroundColor: "#fafafa !important",
+    },
+
+    "& .MuiDataGrid-footerContainer": {
+      borderTop: "1px solid #eee",
+      backgroundColor: "#fff",
+    },
+
+    "& .MuiDataGrid-toolbarContainer": {
+      padding: "8px",
+      borderBottom: "1px solid #eee",
+      backgroundColor: "#fff",
+    },
+  }}
+>
+  <DataGrid
+    rows={filtered}
+    columns={columns}
+    getRowId={(row) => row.id}
+    slots={{ toolbar: GridToolbar }}
+    initialState={{
+      pagination: {
+        paginationModel: { pageSize: 10 },
+      },
+    }}
+    pageSizeOptions={[10, 25, 50]}
+  />
+</Box>
 
       {/* ADD DIALOG */}
       <Dialog open={open} onClose={() => { setOpen(false); resetExtras(); }} maxWidth="sm" fullWidth>

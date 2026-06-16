@@ -1,12 +1,25 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ContactsIcon from "@mui/icons-material/Contacts";
+import PeopleIcon from "@mui/icons-material/People";
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/connexion");
   };
+
+  const linkStyle = (path) => ({
+    display: "flex", alignItems: "center", gap: "10px",
+    color: location.pathname === path ? "#fff" : "rgba(255,255,255,0.75)",
+    textDecoration: "none", fontSize: "15px", fontWeight: location.pathname === path ? "600" : "400",
+    padding: "8px 12px", borderRadius: "8px", transition: "background 0.2s",
+    background: location.pathname === path ? "rgba(255,255,255,0.25)" : "transparent",
+  });
 
   return (
     <div style={{
@@ -22,55 +35,40 @@ export default function Sidebar() {
       boxSizing: "border-box",
     }}>
       <h3 style={{
-        color: "white",
-        fontSize: "28px",
-        fontWeight: "700",
-        marginBottom: "65px",
-        paddingLeft: "15px",
+        color: "white", fontSize: "24px", fontWeight: "700",
+        marginBottom: "40px", paddingLeft: "8px",
       }}>
         Dashboard
       </h3>
 
-      <Link to="/contacts" style={{
-        display: "flex", alignItems: "center", gap: "10px",
-        color: "gray", textDecoration: "none", fontSize: "18px",
-        padding: "6px 8px", borderRadius: "7px", transition: "background 0.2s",
-      }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+      <Link to="/contacts" style={linkStyle("/contacts")}
+        onMouseEnter={e => { if (location.pathname !== "/contacts") e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+        onMouseLeave={e => { if (location.pathname !== "/contacts") e.currentTarget.style.background = "transparent"; }}
       >
-        📇 Contacts
+        <ContactsIcon fontSize="small" /> Contacts
       </Link>
 
-      <Link to="/users" style={{
-        display: "flex", alignItems: "center", gap: "10px",
-        color: "gray", textDecoration: "none", fontSize: "20px",
-        padding: "6px 8px", borderRadius: "8px", transition: "background 0.2s",
-      }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+      <Link to="/users" style={linkStyle("/users")}
+        onMouseEnter={e => { if (location.pathname !== "/users") e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+        onMouseLeave={e => { if (location.pathname !== "/users") e.currentTarget.style.background = "transparent"; }}
       >
-        👤 Users
+        <PeopleIcon fontSize="small" /> Users
       </Link>
 
-      <Link to="/profil" style={{
-        display: "flex", alignItems: "center", gap: "10px",
-        color: "gray", textDecoration: "none", fontSize: "18px",
-        padding: "6px 8px", borderRadius: "7px", transition: "background 0.2s",
-      }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+      <Link to="/profil" style={linkStyle("/profil")}
+        onMouseEnter={e => { if (location.pathname !== "/profil") e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+        onMouseLeave={e => { if (location.pathname !== "/profil") e.currentTarget.style.background = "transparent"; }}
       >
-        Profil
+        <PersonIcon fontSize="small" /> Profil
       </Link>
 
       <button onClick={logout} style={{
         marginTop: "auto",
         padding: "10px 12px",
         background: "rgba(0,0,0,0.2)",
-        color: "gray",
+        color: "rgba(255,255,255,0.85)",
         border: "1.5px solid rgba(255,255,255,0.4)",
-        borderRadius: "6px",
+        borderRadius: "8px",
         cursor: "pointer",
         fontSize: "13px",
         fontWeight: "500",
@@ -83,7 +81,7 @@ export default function Sidebar() {
         onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.35)"}
         onMouseLeave={e => e.currentTarget.style.background = "rgba(0,0,0,0.2)"}
       >
-        🚪 Déconnexion
+        <LogoutIcon fontSize="small" /> Déconnexion
       </button>
     </div>
   );
