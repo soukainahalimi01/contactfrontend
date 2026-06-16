@@ -28,19 +28,13 @@ export default function Sidebar() {
         marginBottom: "65px",
         paddingLeft: "15px",
       }}>
-      Dashboard
+        Dashboard
       </h3>
 
       <Link to="/contacts" style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        color: "gray",
-        textDecoration: "none",
-        fontSize: "18px",
-        padding: "6px 8px",
-        borderRadius: "7px",
-        transition: "background 0.2s",
+        display: "flex", alignItems: "center", gap: "10px",
+        color: "gray", textDecoration: "none", fontSize: "18px",
+        padding: "6px 8px", borderRadius: "7px", transition: "background 0.2s",
       }}
         onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
@@ -49,20 +43,25 @@ export default function Sidebar() {
       </Link>
 
       <Link to="/users" style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        color: "gray",
-        textDecoration: "none",
-        fontSize: "20px",
-        padding: "6px 8px",
-        borderRadius: "8px",
-        transition: "background 0.2s",
+        display: "flex", alignItems: "center", gap: "10px",
+        color: "gray", textDecoration: "none", fontSize: "20px",
+        padding: "6px 8px", borderRadius: "8px", transition: "background 0.2s",
       }}
         onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
       >
         👤 Users
+      </Link>
+
+      <Link to="/profil" style={{
+        display: "flex", alignItems: "center", gap: "10px",
+        color: "gray", textDecoration: "none", fontSize: "18px",
+        padding: "6px 8px", borderRadius: "7px", transition: "background 0.2s",
+      }}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
+        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+      >
+        Profil
       </Link>
 
       <button onClick={logout} style={{

@@ -4,9 +4,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Signup from './auth/Signup';
 import Login from './auth/Login';
 import ProtectedRoute from './auth/ProtectedRoute';
-import DashboardLayout from './DashboardLayout';   // ✅ src/ direct
-import Contact from './auth/Contact';              // ✅ src/auth/
-import Users from './Users';                       // ✅ src/ direct
+import DashboardLayout from './DashboardLayout';
+import Contact from './auth/Contact';
+import Users from './Users';
+import Profil from "./auth/Profil";
 import { Box } from '@mui/material';
 
 function App() {
@@ -24,9 +25,12 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/contacts" element={<Contact />} />
-              <Route path="/users" element={<Users />} />
+              <Route path="/users"    element={<Users />} />
+              {/* ✅ Profil dakhel hna */}
+              <Route path="/profil"   element={<Profil />} />
             </Route>
           </Route>
+
         </Routes>
       </BrowserRouter>
     </Box>
