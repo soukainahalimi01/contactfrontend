@@ -4,6 +4,7 @@ import {
   DialogActions, TextField, Tooltip, Tab, Tabs
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 
 const ORANGE = "#f0a857";
 const ORANGE_LIGHT = "#f5d5a8";
@@ -270,40 +271,63 @@ export default function Contacts() {
   return (
     <div>
       {/* HEADER */}
-      <Box   sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-          p: 2,
-          borderRadius: "16px",
-          background: "linear-gradient(135deg,#f5d5a8,#f0a857)",
-          boxShadow: "0 4px 12px rgba(250, 246, 246, 0.08)",
-        }}
-      >
-        <h2 style={{ margin: 0, color: ORANGE_DARK }}>
-          📇 Contacts
-        </h2>
-      
-        <button
-          onClick={() => setOpen(true)}
-          style={{
-            padding: "8px 16px",
-            borderRadius: "10px",
-            border: "1px solid #fff",
-            background: "transparent",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          + AJOUTER CONTACT
-        </button>
-      </Box>
+      {/* HEADER */}
+<Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    mb: 3,
+    p: 2,
+    borderRadius: "16px",
+    background: "linear-gradient(135deg,#f5d5a8,#f0a857)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  }}
+>
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+    }}
+  >
+    <ContactPhoneIcon
+      sx={{
+        color: "white",
+        fontSize: 28,
+      }}
+    />
+
+    <h2
+      style={{
+        margin: 0,
+        color: "white",
+        fontWeight: 500,
+      }}
+    >
+      Contacts
+    </h2>
+  </Box>
+
+  <button
+    onClick={() => setOpen(true)}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "10px",
+      border: "1px solid white",
+      background: "transparent",
+      color: "white",
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    + AJOUTER CONTACT
+  </button>
+</Box>
 
       {/* SEARCH */}
       <Box sx={{ mb: 2 }}>
-        <input
+       <input
           type="text"
           placeholder="🔍  Rechercher par Nom, Prénom, CIN, Email..."
           value={search}
