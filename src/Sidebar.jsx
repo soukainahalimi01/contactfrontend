@@ -3,10 +3,29 @@ import ContactsIcon from "@mui/icons-material/Contacts";
 import PeopleIcon from "@mui/icons-material/People";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { Avatar, Typography, Box } from "@mui/material";
+
+function getInfosFromToken() {
+  const token = localStorage.getItem("token");
+  if (!token) return { nom: "", prenom: "" };
+  try {
+    const payload = token.split(".")[1];
+    const decoded = JSON.parse(atob(payload));
+    return {
+      nom:    decoded.lastName  || "",
+      prenom: decoded.firstName || "",
+    };
+  } catch (e) {
+    return { nom: "", prenom: "" };
+  }
+}
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { nom, prenom } = getInfosFromToken();
+  const initiales = (nom[0] || "") + (prenom[0] || "");
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -62,8 +81,42 @@ export default function Sidebar() {
         <PersonIcon fontSize="small" /> Profil
       </Link>
 
-      <button onClick={logout} style={{
+      {/* ===== AVATAR FO9 MN DECONNEXION ===== */}
+      <Box sx={{
         marginTop: "auto",
+        mb: 1.5,
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "10px 8px",
+        borderTop: "1px solid rgba(255,255,255,0.2)",
+        paddingTop: "14px",
+      }}>
+        <Avatar sx={{
+          width: 38, height: 38,
+          bgcolor: "rgba(255,255,255,0.25)",
+          color: "#fff",
+          fontSize: 14, fontWeight: 700,
+          border: "2px solid rgba(255,255,255,0.5)",
+        }}>
+          {initiales.toUpperCase()}
+        </Avatar>
+        <Box>
+          <Typography sx={{ color: "#fff", fontWeight: 600, fontSize: 13, lineHeight: 1.2 }}>
+            {nom} {prenom}
+          </Typography>
+          <Typography sx={{
+            fontSize: 10, color: "#fff",
+            bgcolor: "rgba(255,255,255,0.25)",
+            display: "inline-block",
+            px: 1, py: 0.2, borderRadius: "20px", mt: 0.3,
+          }}>
+            Admin
+          </Typography>
+        </Box>
+      </Box>
+
+      <button onClick={logout} style={{
         padding: "10px 12px",
         background: "rgba(0,0,0,0.2)",
         color: "rgba(255,255,255,0.85)",

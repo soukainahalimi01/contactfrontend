@@ -154,39 +154,40 @@ export default function Profil() {
   return (
     <Box sx={{ p: 4, maxWidth: 900 }}>
 
-      {/* ===== AVATAR ===== */}
-      <Box sx={{
-        display: "flex", alignItems: "center", gap: 2,
-        mb: 4, pb: 3,
-        borderBottom: `1px solid ${ORANGE_LIGHT}`,
-      }}>
-        <Avatar sx={{
-          width: 64, height: 64,
-          bgcolor: ORANGE,
-          fontSize: 22, fontWeight: 700,
-          boxShadow: "0 2px 8px rgba(201,124,58,0.3)",
-        }}>
-          {initiales.toUpperCase()}
-        </Avatar>
-        <Box>
-          <Typography sx={{ fontWeight: 700, fontSize: 18, color: "#1a1a1a" }}>
-            {nom} {prenom}
-          </Typography>
-          <Typography sx={{
-            fontSize: 12, color: "#fff",
-            bgcolor: ORANGE, display: "inline-block",
-            px: 1.5, py: 0.3, borderRadius: "20px", mt: 0.5,
-          }}>
-            Admin
-          </Typography>
-        </Box>
-      </Box>
-
       {/* ===== CARD : Infos personnelles ===== */}
       <Box sx={{
         bgcolor: "#fff", borderRadius: 2, p: 3, mb: 3,
         boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
       }}>
+
+        {/* ===== AVATAR — fo9 mn "Informations personnelles" ===== */}
+        <Box sx={{
+          display: "flex", alignItems: "center", gap: 2,
+          mb: 3, pb: 3,
+          borderBottom: `1px solid ${ORANGE_LIGHT}`,
+        }}>
+          <Avatar sx={{
+            width: 64, height: 64,
+            bgcolor: ORANGE,
+            fontSize: 22, fontWeight: 700,
+            boxShadow: "0 2px 8px rgba(201,124,58,0.3)",
+          }}>
+            {initiales.toUpperCase()}
+          </Avatar>
+          <Box>
+            <Typography sx={{ fontWeight: 700, fontSize: 18, color: "#1a1a1a" }}>
+              {nom} {prenom}
+            </Typography>
+            <Typography sx={{
+              fontSize: 12, color: "#fff",
+              bgcolor: ORANGE, display: "inline-block",
+              px: 1.5, py: 0.3, borderRadius: "20px", mt: 0.5,
+            }}>
+              Admin
+            </Typography>
+          </Box>
+        </Box>
+
         <Typography sx={{
           fontWeight: 600, color: ORANGE_DARK,
           mb: 2, pb: 1, borderBottom: `1px solid ${ORANGE_LIGHT}`,
