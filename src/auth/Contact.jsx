@@ -209,7 +209,8 @@ export default function Contacts() {
     </span>
   );
 
-  const columns = [
+  // Colonnes de base, communes à tous les rôles
+  const baseColumns = [
     { field: "id",        headerName: "ID",       width: 55  },
     { field: "lastName",  headerName: "Nom",       width: 110, renderCell: ellipsisCell },
     { field: "firstName", headerName: "Prénom",    width: 110, renderCell: ellipsisCell },
@@ -219,24 +220,63 @@ export default function Contacts() {
     { field: "pays",      headerName: "Pays",      width: 100, renderCell: ellipsisCell },
     { field: "adresse",   headerName: "Adresse",   width: 130, renderCell: ellipsisCell },
     { field: "email",     headerName: "Email",     width: 210, renderCell: ellipsisCell },
-    {
-      field: "actions", headerName: "Actions", width: 155,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
-          <button onClick={() => openEdit(params.row)} style={{
-            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-            background: "transparent", border: `1px solid ${ORANGE}`,
-            borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
-          }}>✏️ Edit</button>
-          <button onClick={() => deleteContact(params.row.id)} style={{
-            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-            background: "transparent", border: "1px solid #e24b4a",
-            borderRadius: "6px", color: "#a32d2d", fontWeight: 500,
-          }}>🗑️ Del</button>
-        </Box>
-      ),
-    },
   ];
+
+  // Colonne "Ajouté par" — visible UNIQUEMENT pour l'ADMIN (lecture seule : qui a ajouté le contact)
+  // Le header reste vide (pas de titre de colonne), seul le chip s'affiche dans les cellules
+  const addedByColumn = {
+    field: "addedByName",
+    headerName: "",
+    width: 150,
+    sortable: false,
+    renderCell: (params) => {
+      const name = params.row.addedByName || params.row.createdByName || params.row.addedBy || "—";
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <span style={{
+            background: "#e6f1fb",
+            color: "#0c447c",
+            fontSize: "12px",
+            fontWeight: 500,
+            padding: "4px 10px",
+            borderRadius: "999px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+          }}>
+            {name}
+          </span>
+        </Box>
+      );
+    },
+  };
+
+  // Colonne "Actions" (Edit/Del) — reste visible pour le USER comme avant, inchangée
+  const actionsColumn = {
+    field: "actions", headerName: "Actions", width: 155,
+    renderCell: (params) => (
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
+        <button onClick={() => openEdit(params.row)} style={{
+          padding: "4px 10px", fontSize: "12px", cursor: "pointer",
+          background: "transparent", border: `1px solid ${ORANGE}`,
+          borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
+        }}>✏️ Edit</button>
+        <button onClick={() => deleteContact(params.row.id)} style={{
+          padding: "4px 10px", fontSize: "12px", cursor: "pointer",
+          background: "transparent", border: "1px solid #e24b4a",
+          borderRadius: "6px", color: "#a32d2d", fontWeight: 500,
+        }}>🗑️ Del</button>
+      </Box>
+    ),
+  };
+
+  // On compose les colonnes selon le rôle :
+  // - USER  : colonnes de base + "Actions" (Edit/Del) → comme avant, AUCUN changement
+  // - ADMIN : colonnes de base + "Ajouté par" UNIQUEMENT (lecture seule, pas d'Edit/Del)
+  const columns = isAdmin
+    ? [...baseColumns, addedByColumn]
+    : [...baseColumns, actionsColumn];
 
   const dialogFieldStyle = {
     "& label.Mui-focused": { color: ORANGE },
