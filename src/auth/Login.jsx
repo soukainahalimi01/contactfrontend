@@ -6,6 +6,7 @@ import {
   IconButton, InputAdornment, Link, Divider, Alert
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -39,8 +40,17 @@ function Login() {
         email: form.email,
         password: form.password,
       });
-      localStorage.setItem("token", res.data.token);
+
+      const token = res.data.token;
+      localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", res.data.refreshToken);
+
+      // On décode le token pour récupérer le role (et autres infos utiles)
+      const decoded = jwtDecode(token);
+      localStorage.setItem("role", decoded.role);
+      localStorage.setItem("firstName", decoded.firstName || "");
+      localStorage.setItem("lastName", decoded.lastName || "");
+
       navigate("/");
     } catch (err) {
       if (err.response) {
@@ -70,7 +80,6 @@ function Login() {
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
 
-        {/* Email — gris par défaut MUI */}
         <TextField
           label="Email"
           name="email"
@@ -83,7 +92,6 @@ function Login() {
           helperText={errors.email}
         />
 
-        {/* Password — orange */}
         <TextField
           label="Password"
           name="password"
