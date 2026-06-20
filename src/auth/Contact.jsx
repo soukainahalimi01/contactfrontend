@@ -39,6 +39,21 @@ export default function Contacts() {
   const role = localStorage.getItem("role"); // "ADMIN" ou "USER"
   const isAdmin = role === "ADMIN";
 
+  // On décode le token JWT pour récupérer l'id de l'utilisateur connecté,
+  // afin de savoir sur quels contacts il a le droit d'agir (Edit/Del).
+  const getCurrentUserId = () => {
+    if (!token) return null;
+    try {
+      const payloadBase64 = token.split(".")[1];
+      const payloadJson = JSON.parse(atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/")));
+      return payloadJson.id || payloadJson.userId || payloadJson.sub || null;
+    } catch (e) {
+      console.error("Erreur décodage token:", e);
+      return null;
+    }
+  };
+  const currentUserId = getCurrentUserId();
+
   useEffect(() => { loadContacts(); }, []);
 
   useEffect(() => {
@@ -252,28 +267,34 @@ export default function Contacts() {
     },
   };
 
-  // Colonne "Actions" (Edit/Del) — reste visible pour le USER comme avant, inchangée
+  // Colonne "Actions" (Edit/Del) — visible pour TOUT LE MONDE, mais les boutons
+  // n'apparaissent que sur les contacts appartenant à l'utilisateur connecté.
+  // Sur les contacts des autres users, la cellule reste vide (lecture seule).
   const actionsColumn = {
     field: "actions", headerName: "Actions", width: 155,
-    renderCell: (params) => (
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
-        <button onClick={() => openEdit(params.row)} style={{
-          padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-          background: "transparent", border: `1px solid ${ORANGE}`,
-          borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
-        }}>✏️ Edit</button>
-        <button onClick={() => deleteContact(params.row.id)} style={{
-          padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-          background: "transparent", border: "1px solid #e24b4a",
-          borderRadius: "6px", color: "#a32d2d", fontWeight: 500,
-        }}>🗑️ Del</button>
-      </Box>
-    ),
+    renderCell: (params) => {
+      const isOwner = String(params.row.addedByUserId) === String(currentUserId);
+      if (!isOwner) return null;
+      return (
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
+          <button onClick={() => openEdit(params.row)} style={{
+            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
+            background: "transparent", border: `1px solid ${ORANGE}`,
+            borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
+          }}>✏️ Edit</button>
+          <button onClick={() => deleteContact(params.row.id)} style={{
+            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
+            background: "transparent", border: "1px solid #e24b4a",
+            borderRadius: "6px", color: "#a32d2d", fontWeight: 500,
+          }}>🗑️ Del</button>
+        </Box>
+      );
+    },
   };
 
   // On compose les colonnes selon le rôle :
-  // - USER  : colonnes de base + "Actions" (Edit/Del) → comme avant, AUCUN changement
-  // - ADMIN : colonnes de base + "Ajouté par" UNIQUEMENT (lecture seule, pas d'Edit/Del)
+  // - USER  : colonnes de base + "Actions" → Edit/Del visibles UNIQUEMENT sur ses propres contacts
+  // - ADMIN : colonnes de base + "Ajouté par" → lecture seule, jamais d'Edit/Del
   const columns = isAdmin
     ? [...baseColumns, addedByColumn]
     : [...baseColumns, actionsColumn];
