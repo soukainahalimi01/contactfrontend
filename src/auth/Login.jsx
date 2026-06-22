@@ -45,7 +45,6 @@ function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      // On décode le token pour récupérer le role (et autres infos utiles)
       const decoded = jwtDecode(token);
       localStorage.setItem("role", decoded.role);
       localStorage.setItem("firstName", decoded.firstName || "");
@@ -65,90 +64,106 @@ function Login() {
 
   const orangeColor = "#f0831e";
 
+  const orangeFieldStyle = {
+    '& label': { color: orangeColor },
+    '& label.Mui-focused': { color: orangeColor },
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: '#fffde7',
+      '& fieldset': { borderColor: orangeColor },
+      '&:hover fieldset': { borderColor: orangeColor },
+      '&.Mui-focused fieldset': { borderColor: orangeColor },
+    },
+  };
+
   return (
     <Box sx={{
-      maxWidth: 400, mx: 'auto', my: 8, p: 4,
-      border: '1px solid', borderColor: orangeColor,
-      borderRadius: 2, background: "white"
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #ffffff 30%, #f0831e 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
-      <Typography variant="h5" fontWeight={500} gutterBottom>Connexion</Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
-        Saisissez vos identifiants pour continuer
-      </Typography>
+      <Box sx={{
+        width: '100%',
+        maxWidth: 460,
+        p: 4,
+        border: '2px solid',
+        borderColor: orangeColor,
+        borderRadius: 5,
+        background: "white",
+      }}>
+        <Typography variant="h5" fontWeight={500} gutterBottom>Connexion</Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Saisissez vos identifiants pour continuer
+        </Typography>
 
-      {errors.api && <Alert severity="error" sx={{ mb: 2 }}>{errors.api}</Alert>}
+        {errors.api && <Alert severity="error" sx={{ mb: 2 }}>{errors.api}</Alert>}
 
-      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
 
-        <TextField
-          label="Email"
-          name="email"
-          type="email"
-          fullWidth
-          margin="normal"
-          value={form.email}
-          onChange={handleChange}
-          error={!!errors.email}
-          helperText={errors.email}
-        />
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            fullWidth
+            margin="normal"
+            value={form.email}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
+            sx={orangeFieldStyle}
+          />
 
-        <TextField
-          label="Password"
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          fullWidth
-          margin="normal"
-          value={form.password}
-          onChange={handleChange}
-          error={!!errors.password}
-          helperText={errors.password}
-          sx={{
-            '& label': { color: orangeColor },
-            '& label.Mui-focused': { color: orangeColor },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: orangeColor },
-              '&:hover fieldset': { borderColor: orangeColor },
-              '&.Mui-focused fieldset': { borderColor: orangeColor },
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+          <TextField
+            label="Password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            margin="normal"
+            value={form.password}
+            onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
+            sx={orangeFieldStyle}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-        <Box textAlign="right" mt={1}>
-          <Link href="#" variant="body2" sx={{ color: orangeColor }}>
-            Mot de passe oublié
-          </Link>
+          <Box textAlign="right" mt={1}>
+            <Link href="#" variant="body2" sx={{ color: orangeColor }}>
+              Mot de passe oublié
+            </Link>
+          </Box>
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              mt: 3,
+              background: orangeColor,
+              '&:hover': { background: "#d4701a" },
+            }}
+            disabled={loading}
+          >
+            {loading ? "Connexion..." : "SE CONNECTER"}
+          </Button>
         </Box>
 
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            mt: 3,
-            background: orangeColor,
-            '&:hover': { background: "#d4701a" },
-          }}
-          disabled={loading}
-        >
-          {loading ? "Connexion..." : "SE CONNECTER"}
-        </Button>
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="body2" textAlign="center">
+          Vous n'avez pas de compte ?{' '}
+          <Link href="/inscription" sx={{ color: orangeColor }}>S'inscrire</Link>
+        </Typography>
       </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Typography variant="body2" textAlign="center">
-        Vous n'avez pas de compte ?{' '}
-        <Link href="/inscription" sx={{ color: orangeColor }}>S'inscrire</Link>
-      </Typography>
     </Box>
   );
 }
