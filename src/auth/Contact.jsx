@@ -266,35 +266,50 @@ export default function Contacts() {
       );
     },
   };
+const actionsColumn = {
+  field: "actions",
+  headerName: "Actions",
+  width: 155,
 
-  // Colonne "Actions" (Edit/Del) — visible pour TOUT LE MONDE, mais les boutons
-  // n'apparaissent que sur les contacts appartenant à l'utilisateur connecté.
-  // Sur les contacts des autres users, la cellule reste vide (lecture seule).
-  const actionsColumn = {
-    field: "actions", headerName: "Actions", width: 155,
-    renderCell: (params) => {
-      const isOwner = String(params.row.addedByUserId) === String(currentUserId);
-      if (!isOwner) return null;
-      return (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
-          <button onClick={() => openEdit(params.row)} style={{
-            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-            background: "transparent", border: `1px solid ${ORANGE}`,
-            borderRadius: "6px", color: ORANGE_DARK, fontWeight: 500,
-          }}>✏️ Edit</button>
-          <button onClick={() => deleteContact(params.row.id)} style={{
-            padding: "4px 10px", fontSize: "12px", cursor: "pointer",
-            background: "transparent", border: "1px solid #e24b4a",
-            borderRadius: "6px", color: "#a32d2d", fontWeight: 500,
-          }}>🗑️ Del</button>
-        </Box>
-      );
-    },
-  };
+  renderCell: (params) => {
+    return (
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center", height: "100%" }}>
+        <button
+          onClick={() => openEdit(params.row)}
+          style={{
+            padding: "4px 10px",
+            fontSize: "12px",
+            cursor: "pointer",
+            background: "transparent",
+            border: `1px solid ${ORANGE}`,
+            borderRadius: "6px",
+            color: ORANGE_DARK,
+            fontWeight: 500,
+          }}
+        >
+          ✏️ Edit
+        </button>
 
-  // On compose les colonnes selon le rôle :
-  // - USER  : colonnes de base + "Actions" → Edit/Del visibles UNIQUEMENT sur ses propres contacts
-  // - ADMIN : colonnes de base + "Ajouté par" → lecture seule, jamais d'Edit/Del
+        <button
+          onClick={() => deleteContact(params.row.id)}
+          style={{
+            padding: "4px 10px",
+            fontSize: "12px",
+            cursor: "pointer",
+            background: "transparent",
+            border: "1px solid #e24b4a",
+            borderRadius: "6px",
+            color: "#a32d2d",
+            fontWeight: 500,
+          }}
+        >
+          🗑️ Del
+        </button>
+      </Box>
+    );
+  },
+};
+ 
   const columns = isAdmin
     ? [...baseColumns, addedByColumn]
     : [...baseColumns, actionsColumn];
