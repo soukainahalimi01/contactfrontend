@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import ContactsIcon from "@mui/icons-material/Contacts";
 import PeopleIcon from "@mui/icons-material/People";
 import PersonIcon from "@mui/icons-material/Person";
+import HistoryIcon from "@mui/icons-material/History";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Avatar, Typography, Box } from "@mui/material";
 
@@ -34,6 +35,7 @@ export default function Sidebar() {
 
   const { nom, prenom, role } = userInfo;
   const initiales = (nom[0] || "") + (prenom[0] || "");
+  const isAdmin = role && role.toLowerCase() === "admin";
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -89,6 +91,16 @@ export default function Sidebar() {
       >
         <PersonIcon fontSize="small" /> Profil
       </Link>
+
+      {/* ===== HISTORIQUE - visible uniquement pour l'admin ===== */}
+      {isAdmin && (
+        <Link to="/historique" style={linkStyle("/historique")}
+          onMouseEnter={e => { if (location.pathname !== "/historique") e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+          onMouseLeave={e => { if (location.pathname !== "/historique") e.currentTarget.style.background = "transparent"; }}
+        >
+          <HistoryIcon fontSize="small" /> Historique
+        </Link>
+      )}
 
       {/* ===== AVATAR FO9 MN DECONNEXION ===== */}
       <Box sx={{
